@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "582140752319",
+    "project_id": "agripoa-system",
+    "storage_bucket": "agripoa-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:582140752319:android:fffe2bb46d9f215fe2710a",
+        "android_client_info": {
+          "package_name": "com.example.agripoa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "582140752319-su5vvrjsr034opj5vv04j9bghrmp4ud6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.agripoa",
+            "certificate_hash": "39c3a8c3072c2e6ff8f4bc3d21ab9667eb7f717f"
+          }
+        },
+        {
+          "client_id": "582140752319-2v2hu9femieaa35c8go5kp1jlqmt8kda.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWKCtGheTVriokp5H6bu-DeLN45Zw_MDY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "582140752319-2v2hu9femieaa35c8go5kp1jlqmt8kda.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "582140752319-532l1bojg4aupvhl0eucalsir8r8h8nq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.agripoa"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
