@@ -25,7 +25,6 @@ class _FarmUserAssignmentScreenState
     extends ConsumerState<FarmUserAssignmentScreen> {
   final _emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final bool _isLoading = false;
 
   // Mock available users for demonstration
   final List<Map<String, String>> _availableUsers = [

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../domain/entities/user.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_farmer_usecase.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
@@ -68,7 +69,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Set authenticated state
-  void setAuthenticated(user) {
+  void setAuthenticated(UserEntity user) {
     state = AuthAuthenticated(user);
   }
 
@@ -114,6 +115,7 @@ class LoginNotifier extends StateNotifier<LoginState> {
       final user = await _googleSignInUsecase();
       state = LoginSuccess(user);
     } catch (e) {
+      print('Google sign-in error: $e');
       state = LoginError(e.toString().replaceAll('Exception: ', ''));
     }
   }

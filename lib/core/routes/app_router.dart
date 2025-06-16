@@ -26,6 +26,9 @@ import '../../features/cooperative/presentation/screens/cooperative_sales_screen
 import '../../features/cooperative/presentation/screens/cooperative_reports_screen.dart';
 import '../../features/cooperative/presentation/screens/cooperative_profile_screen.dart';
 
+// Subscription screens
+import '../../features/subscription/presentation/screens/subscription_screen.dart';
+
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
@@ -59,6 +62,13 @@ class AppRouter {
               GoRoute(
                 path: '/farmer-home',
                 builder: (context, state) => const FarmerDashboardScreen(),
+                routes: [
+                  // Subscription subroute
+                  GoRoute(
+                    path: 'subscription',
+                    builder: (context, state) => const SubscriptionScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -107,7 +117,10 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/cooperative-farmers',
-                builder: (context, state) => const CooperativeFarmersScreen(),
+                builder:
+                    (context, state) => CooperativeFarmersScreen(
+                      cooperativeId: state.extra as String? ?? 'coop_001',
+                    ),
               ),
             ],
           ),

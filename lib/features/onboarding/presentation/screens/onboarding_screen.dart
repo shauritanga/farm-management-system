@@ -125,10 +125,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       children: [
         // Top bar with skip button
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveUtils.spacing24,
-            vertical: ResponsiveUtils.spacing16,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: ResponsiveUtils.spacing24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -141,19 +138,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   color: theme.colorScheme.primary,
                 ),
               ),
-
-              // Skip button (hide on last page)
-              if (state.currentPageIndex < state.pages.length - 1)
-                TextButton(
-                  onPressed: _skipOnboarding,
-                  child: Text(
-                    'Skip',
-                    style: GoogleFonts.inter(
-                      fontSize: ResponsiveUtils.fontSize16,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              // Placeholder or Skip button
+              state.currentPageIndex < state.pages.length - 1
+                  ? TextButton(
+                    onPressed: _skipOnboarding,
+                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                    child: Text(
+                      'Skip',
+                      style: GoogleFonts.inter(
+                        fontSize: ResponsiveUtils.fontSize16,
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
                     ),
+                  )
+                  : SizedBox(
+                    width:
+                        ResponsiveUtils
+                            .fontSize16, // Match approximate width of "Skip"
+                    height:
+                        ResponsiveUtils.fontSize16 *
+                        1.6, // Approximate height of TextButton
                   ),
-                ),
             ],
           ),
         ),

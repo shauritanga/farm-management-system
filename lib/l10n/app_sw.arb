@@ -1,0 +1,82 @@
+{
+  "@@locale": "sw",
+  "appTitle": "AgriPoa",
+  
+  "welcome": "Karibu",
+  
+  "marketplace": "Soko",
+  
+  "browseProducts": "Tazama Bidhaa",
+  
+  "myStore": "Duka Langu",
+  
+  "buy": "Nunua",
+  
+  "sell": "Uza",
+  
+  "searchProducts": "Tafuta bidhaa, vifaa, huduma...",
+  
+  "featuredProducts": "Bidhaa Maalum",
+  
+  "viewAll": "Ona Zote",
+  
+  "noListingsYet": "Hakuna orodha bado",
+  
+  "startSelling": "Anza kuuza bidhaa na huduma zako",
+  
+  "addListing": "Ongeza Orodha",
+  
+  "sellItem": "Uza Bidhaa",
+  
+  "notifications": "Arifa",
+  
+  "cart": "Kikapu",
+  
+  "categories": "Makundi",
+  
+  "seeds": "Mbegu",
+  
+  "fertilizers": "Mbolea",
+  
+  "equipment": "Vifaa",
+  
+  "livestock": "Mifugo",
+  
+  "crops": "Mazao",
+  
+  "services": "Huduma",
+  
+  "advancedFilters": "Vichujio vya Kina",
+  
+  "clearAll": "Futa Zote",
+  
+  "applyFilters": "Tumia Vichujio",
+  
+  "category": "Kundi",
+  
+  "location": "Mahali",
+  
+  "priceRange": "Kiwango cha Bei",
+  
+  "distance": "Umbali",
+  
+  "rating": "Ukadiriaji",
+  
+  "inStockOnly": "Zilizo Hifadhini Tu",
+  
+  "sortBy": "Panga Kwa",
+  
+  "recent": "Za Hivi Karibuni",
+  
+  "priceLowToHigh": "Bei: Chini hadi Juu",
+  
+  "priceHighToLow": "Bei: Juu hadi Chini",
+  
+  "rating_sort": "Ukadiriaji",
+  
+  "allLocations": "Maeneo Yote",
+  
+  "all": "Zote",
+  
+  "currency": "TSh"
+}

@@ -97,33 +97,43 @@ class ModernBottomNavigation extends StatelessWidget {
                   : Colors.transparent,
           borderRadius: BorderRadius.circular(ResponsiveUtils.radius20),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              child: Icon(
-                isSelected ? item.activeIcon : item.icon,
-                size: ResponsiveUtils.iconSize24,
-                color: isSelected ? activeColor : inactiveColor,
-              ),
-            ),
-            if (isSelected && item.label != null) ...[
-              SizedBox(width: ResponsiveUtils.spacing8),
-              AnimatedOpacity(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth:
+                ResponsiveUtils.screenWidth * 0.32, // Max 25% of screen width
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                opacity: isSelected ? 1.0 : 0.0,
-                child: Text(
-                  item.label!,
-                  style: GoogleFonts.inter(
-                    fontSize: ResponsiveUtils.fontSize14,
-                    fontWeight: FontWeight.w600,
-                    color: activeColor,
-                  ),
+                child: Icon(
+                  isSelected ? item.activeIcon : item.icon,
+                  size: ResponsiveUtils.iconSize24,
+                  color: isSelected ? activeColor : inactiveColor,
                 ),
               ),
+              if (isSelected && item.label != null) ...[
+                SizedBox(width: ResponsiveUtils.spacing8),
+                Flexible(
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: isSelected ? 1.0 : 0.0,
+                    child: Text(
+                      item.label!,
+                      style: GoogleFonts.inter(
+                        fontSize: ResponsiveUtils.fontSize14,
+                        fontWeight: FontWeight.w600,
+                        color: activeColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -173,28 +183,28 @@ class FarmerNavItems {
 class CooperativeNavItems {
   static List<ModernNavItem> get items => [
     const ModernNavItem(
-      icon: Icons.dashboard_outlined,
-      activeIcon: Icons.dashboard,
+      icon: HugeIcons.strokeRoundedDashboardSquare01,
+      activeIcon: HugeIcons.strokeRoundedDashboardSquare01,
       label: 'Dashboard',
     ),
     const ModernNavItem(
-      icon: Icons.groups_outlined,
-      activeIcon: Icons.groups,
+      icon: HugeIcons.strokeRoundedUserGroup03,
+      activeIcon: HugeIcons.strokeRoundedUserGroup03,
       label: 'Farmers',
     ),
     const ModernNavItem(
-      icon: Icons.point_of_sale_outlined,
-      activeIcon: Icons.point_of_sale,
+      icon: HugeIcons.strokeRoundedSaleTag02,
+      activeIcon: HugeIcons.strokeRoundedSaleTag02,
       label: 'Sales',
     ),
     const ModernNavItem(
-      icon: Icons.analytics_outlined,
-      activeIcon: Icons.analytics,
-      label: 'Reports',
+      icon: HugeIcons.strokeRoundedAnalytics03,
+      activeIcon: HugeIcons.strokeRoundedAnalytics03,
+      label: 'Reports & Analytics',
     ),
     const ModernNavItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
+      icon: HugeIcons.strokeRoundedUser03,
+      activeIcon: HugeIcons.strokeRoundedUser03,
       label: 'Profile',
     ),
   ];

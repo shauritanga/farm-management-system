@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import '../../../subscription/presentation/screens/subscription_screen.dart';
 import '../../../subscription/domain/entities/subscription.dart';
 import '../../../../core/utils/responsive_utils.dart';
+import '../../../../core/widgets/language_selector.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/states/auth_state.dart';
 
@@ -945,6 +946,14 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
 
             _buildSettingsTile(
               theme,
+              'Language / Lugha',
+              'Change app language / Badili lugha ya programu',
+              Icons.language,
+              () => _showLanguageSettings(),
+            ),
+
+            _buildSettingsTile(
+              theme,
               'Help & Support',
               'Get help and contact support',
               Icons.help,
@@ -1414,6 +1423,130 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
   void _showPrivacySettings() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Privacy settings coming soon')),
+    );
+  }
+
+  /// Show language settings
+  void _showLanguageSettings() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(ResponsiveUtils.radius20),
+              ),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(ResponsiveUtils.spacing24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Handle bar
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.height16),
+
+                  // Title
+                  Text(
+                    'Language Settings',
+                    style: GoogleFonts.poppins(
+                      fontSize: ResponsiveUtils.fontSize20,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.height8),
+
+                  // Subtitle
+                  Text(
+                    'Choose your preferred language for the app interface.',
+                    style: GoogleFonts.inter(
+                      fontSize: ResponsiveUtils.fontSize14,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.height24),
+
+                  // Language selector
+                  const LanguageSelector(),
+
+                  SizedBox(height: ResponsiveUtils.height16),
+
+                  // Quick toggle section
+                  Container(
+                    padding: EdgeInsets.all(ResponsiveUtils.spacing16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(
+                        ResponsiveUtils.radius12,
+                      ),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.flash_on,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: ResponsiveUtils.iconSize20,
+                        ),
+                        SizedBox(width: ResponsiveUtils.spacing12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Quick Toggle',
+                                style: GoogleFonts.inter(
+                                  fontSize: ResponsiveUtils.fontSize14,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                              Text(
+                                'Tap to switch between languages',
+                                style: GoogleFonts.inter(
+                                  fontSize: ResponsiveUtils.fontSize12,
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const LanguageToggleButton(),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: ResponsiveUtils.height24),
+                ],
+              ),
+            ),
+          ),
     );
   }
 

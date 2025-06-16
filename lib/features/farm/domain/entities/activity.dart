@@ -125,8 +125,8 @@ class ActivityEntity extends Equatable {
     final now = DateTime.now();
     final scheduled = scheduledDate;
     return now.year == scheduled.year &&
-           now.month == scheduled.month &&
-           now.day == scheduled.day;
+        now.month == scheduled.month &&
+        now.day == scheduled.day;
   }
 
   /// Get days until due (negative if overdue)
@@ -146,6 +146,28 @@ class ActivityEntity extends Equatable {
     if (quantity == null) return null;
     final unitStr = unit ?? '';
     return '${quantity!.toStringAsFixed(1)} $unitStr'.trim();
+  }
+
+  /// Formatted scheduled date
+  String get formattedScheduledDate {
+    return '${scheduledDate.day}/${scheduledDate.month}/${scheduledDate.year}';
+  }
+
+  /// Formatted completed date
+  String? get formattedCompletedDate {
+    if (completedDate == null) return null;
+    return '${completedDate!.day}/${completedDate!.month}/${completedDate!.year}';
+  }
+
+  /// Formatted created date
+  String get formattedCreatedDate {
+    return '${createdAt.day}/${createdAt.month}/${createdAt.year}';
+  }
+
+  /// Formatted updated date
+  String? get formattedUpdatedDate {
+    if (updatedAt == null) return null;
+    return '${updatedAt!.day}/${updatedAt!.month}/${updatedAt!.year}';
   }
 
   @override

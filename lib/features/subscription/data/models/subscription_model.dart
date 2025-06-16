@@ -47,7 +47,8 @@ class SubscriptionModel extends SubscriptionEntity {
       'status': status.value,
       'startDate': Timestamp.fromDate(startDate),
       'endDate': endDate != null ? Timestamp.fromDate(endDate!) : null,
-      'trialEndDate': trialEndDate != null ? Timestamp.fromDate(trialEndDate!) : null,
+      'trialEndDate':
+          trialEndDate != null ? Timestamp.fromDate(trialEndDate!) : null,
       'autoRenew': autoRenew,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
@@ -81,7 +82,7 @@ class SubscriptionModel extends SubscriptionEntity {
   factory SubscriptionModel.createFreeTier(String userId) {
     final now = DateTime.now();
     final trialEnd = now.add(const Duration(days: 14));
-    
+
     return SubscriptionModel(
       id: '', // Will be set by Firestore
       userId: userId,
@@ -129,13 +130,4 @@ class SubscriptionModel extends SubscriptionEntity {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-}
-
-/// Helper method to parse Firestore Timestamp (moved outside class for reuse)
-DateTime _parseTimestamp(dynamic timestamp) {
-  if (timestamp == null) return DateTime.now();
-  if (timestamp is Timestamp) return timestamp.toDate();
-  if (timestamp is DateTime) return timestamp;
-  if (timestamp is String) return DateTime.parse(timestamp);
-  return DateTime.now();
 }

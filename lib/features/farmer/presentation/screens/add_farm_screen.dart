@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../../subscription/domain/entities/subscription.dart';
+import '../../../subscription/presentation/screens/subscription_screen.dart';
 import '../../../farm/presentation/providers/farm_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/states/auth_state.dart';
@@ -763,12 +764,7 @@ class _AddFarmScreenState extends ConsumerState<AddFarmScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error creating farm: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showErrorMessage(e.toString());
       }
     } finally {
       if (mounted) {
@@ -777,5 +773,219 @@ class _AddFarmScreenState extends ConsumerState<AddFarmScreen> {
         });
       }
     }
+  }
+
+  /// Show error message with user-friendly text
+  void _showErrorMessage(String error) {
+    String title = 'Error Creating Farm';
+    String message = error;
+    Color backgroundColor = Colors.red;
+    IconData icon = Icons.error;
+
+    // Check for subscription-related errors
+    if (error.contains('Free tier users can only create 1 farm') ||
+        error.contains('Upgrade to Serengeti or Tanzanite')) {
+      title = 'Subscription Limit Reached';
+      message =
+          'Free tier allows only 1 farm. Upgrade to create unlimited farms!';
+      backgroundColor = Colors.orange;
+      icon = Icons.workspace_premium;
+
+      _showSubscriptionLimitDialog();
+      return;
+    }
+
+    // Check for authentication errors
+    if (error.contains('not authenticated')) {
+      title = 'Authentication Error';
+      message = 'Please log in again to continue.';
+      icon = Icons.login;
+    }
+
+    // Check for network/connection errors
+    if (error.contains('Failed to create farm') ||
+        error.contains('network') ||
+        error.contains('connection')) {
+      title = 'Connection Error';
+      message = 'Please check your internet connection and try again.';
+      icon = Icons.wifi_off;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(icon, color: Colors.white),
+            SizedBox(width: ResponsiveUtils.spacing12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.inter(
+                      fontSize: ResponsiveUtils.fontSize14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    message,
+                    style: GoogleFonts.inter(
+                      fontSize: ResponsiveUtils.fontSize12,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: backgroundColor,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  /// Show subscription limit dialog with upgrade options
+  void _showSubscriptionLimitDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            icon: Icon(
+              Icons.workspace_premium,
+              color: Colors.orange,
+              size: ResponsiveUtils.iconSize48,
+            ),
+            title: Text(
+              'Subscription Limit Reached',
+              style: GoogleFonts.poppins(
+                fontSize: ResponsiveUtils.fontSize18,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Your Free Tier subscription allows only 1 farm.',
+                  style: GoogleFonts.inter(
+                    fontSize: ResponsiveUtils.fontSize14,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.8),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: ResponsiveUtils.height16),
+                Container(
+                  padding: EdgeInsets.all(ResponsiveUtils.spacing16),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                      ResponsiveUtils.radius12,
+                    ),
+                    border: Border.all(
+                      color: Colors.orange.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Upgrade to unlock unlimited farms:',
+                        style: GoogleFonts.inter(
+                          fontSize: ResponsiveUtils.fontSize12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.orange.shade700,
+                        ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.height8),
+                      Text(
+                        '• Serengeti Package: Unlimited farms\n• Tanzanite Package: Unlimited farms + user assignment',
+                        style: GoogleFonts.inter(
+                          fontSize: ResponsiveUtils.fontSize11,
+                          color: Colors.orange.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _handleMaybeLater();
+                },
+                child: Text(
+                  'Maybe Later',
+                  style: GoogleFonts.inter(
+                    fontSize: ResponsiveUtils.fontSize14,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _handleUpgradeNow();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(
+                  'Upgrade Now',
+                  style: GoogleFonts.inter(
+                    fontSize: ResponsiveUtils.fontSize14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  /// Handle "Maybe Later" action - reset farm state and go back
+  void _handleMaybeLater() {
+    final authState = ref.read(authProvider);
+    if (authState is AuthAuthenticated) {
+      // Reset the farm provider state and reload existing farms
+      ref.read(farmProvider.notifier).loadFarms(authState.user.id);
+    }
+
+    // Navigate back to farms screen
+    Navigator.of(
+      context,
+    ).pop(false); // Return false to indicate no farm was created
+  }
+
+  /// Handle "Upgrade Now" action - reset farm state and navigate to subscription
+  void _handleUpgradeNow() {
+    final authState = ref.read(authProvider);
+    if (authState is AuthAuthenticated) {
+      // Reset the farm provider state and reload existing farms
+      ref.read(farmProvider.notifier).loadFarms(authState.user.id);
+    }
+
+    // Navigate back to farms screen first
+    Navigator.of(
+      context,
+    ).pop(false); // Return false to indicate no farm was created
+
+    // Then navigate to subscription screen
+    _navigateToSubscription();
+  }
+
+  /// Navigate to subscription screen
+  void _navigateToSubscription() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const SubscriptionScreen()));
   }
 }

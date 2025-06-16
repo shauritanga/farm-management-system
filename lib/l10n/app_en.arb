@@ -1,0 +1,202 @@
+{
+  "@@locale": "en",
+  "appTitle": "AgriPoa",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome message"
+  },
+  
+  "marketplace": "Marketplace",
+  "@marketplace": {
+    "description": "Marketplace section title"
+  },
+  
+  "browseProducts": "Browse Products",
+  "@browseProducts": {
+    "description": "Browse products title for buy mode"
+  },
+  
+  "myStore": "My Store",
+  "@myStore": {
+    "description": "My store title for sell mode"
+  },
+  
+  "buy": "Buy",
+  "@buy": {
+    "description": "Buy option in popup menu"
+  },
+  
+  "sell": "Sell",
+  "@sell": {
+    "description": "Sell option in popup menu"
+  },
+  
+  "searchProducts": "Search products, equipment, services...",
+  "@searchProducts": {
+    "description": "Search bar placeholder text"
+  },
+  
+  "featuredProducts": "Featured Products",
+  "@featuredProducts": {
+    "description": "Featured products section title"
+  },
+  
+  "viewAll": "View All",
+  "@viewAll": {
+    "description": "View all button text"
+  },
+  
+  "noListingsYet": "No listings yet",
+  "@noListingsYet": {
+    "description": "Empty state message for no listings"
+  },
+  
+  "startSelling": "Start selling your products and services",
+  "@startSelling": {
+    "description": "Empty state description for selling"
+  },
+  
+  "addListing": "Add Listing",
+  "@addListing": {
+    "description": "Add listing button text"
+  },
+  
+  "sellItem": "Sell Item",
+  "@sellItem": {
+    "description": "Floating action button text"
+  },
+  
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications title"
+  },
+  
+  "cart": "Cart",
+  "@cart": {
+    "description": "Shopping cart title"
+  },
+  
+  "categories": "Categories",
+  "@categories": {
+    "description": "Categories section title"
+  },
+  
+  "seeds": "Seeds",
+  "@seeds": {
+    "description": "Seeds category"
+  },
+  
+  "fertilizers": "Fertilizers",
+  "@fertilizers": {
+    "description": "Fertilizers category"
+  },
+  
+  "equipment": "Equipment",
+  "@equipment": {
+    "description": "Equipment category"
+  },
+  
+  "livestock": "Livestock",
+  "@livestock": {
+    "description": "Livestock category"
+  },
+  
+  "crops": "Crops",
+  "@crops": {
+    "description": "Crops category"
+  },
+  
+  "services": "Services",
+  "@services": {
+    "description": "Services category"
+  },
+  
+  "advancedFilters": "Advanced Filters",
+  "@advancedFilters": {
+    "description": "Advanced filters title"
+  },
+  
+  "clearAll": "Clear All",
+  "@clearAll": {
+    "description": "Clear all filters button"
+  },
+  
+  "applyFilters": "Apply Filters",
+  "@applyFilters": {
+    "description": "Apply filters button"
+  },
+  
+  "category": "Category",
+  "@category": {
+    "description": "Category filter label"
+  },
+  
+  "location": "Location",
+  "@location": {
+    "description": "Location filter label"
+  },
+  
+  "priceRange": "Price Range",
+  "@priceRange": {
+    "description": "Price range filter label"
+  },
+  
+  "distance": "Distance",
+  "@distance": {
+    "description": "Distance filter label"
+  },
+  
+  "rating": "Rating",
+  "@rating": {
+    "description": "Rating filter label"
+  },
+  
+  "inStockOnly": "In Stock Only",
+  "@inStockOnly": {
+    "description": "In stock filter label"
+  },
+  
+  "sortBy": "Sort By",
+  "@sortBy": {
+    "description": "Sort by filter label"
+  },
+  
+  "recent": "Recent",
+  "@recent": {
+    "description": "Recent sort option"
+  },
+  
+  "priceLowToHigh": "Price: Low to High",
+  "@priceLowToHigh": {
+    "description": "Price low to high sort option"
+  },
+  
+  "priceHighToLow": "Price: High to Low",
+  "@priceHighToLow": {
+    "description": "Price high to low sort option"
+  },
+  
+  "rating_sort": "Rating",
+  "@rating_sort": {
+    "description": "Rating sort option"
+  },
+  
+  "allLocations": "All Locations",
+  "@allLocations": {
+    "description": "All locations filter option"
+  },
+  
+  "all": "All",
+  "@all": {
+    "description": "All categories filter option"
+  },
+  
+  "currency": "TSh",
+  "@currency": {
+    "description": "Tanzanian Shilling currency symbol"
+  }
+}

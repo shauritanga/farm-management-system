@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/farm.dart';
 import '../../domain/repositories/farm_repository.dart';
 import '../models/farm_model.dart';
-import '../../../subscription/domain/entities/subscription.dart';
 
 /// Implementation of FarmRepository using Firestore
 class FarmRepositoryImpl implements FarmRepository {
@@ -14,11 +13,12 @@ class FarmRepositoryImpl implements FarmRepository {
   @override
   Future<List<FarmEntity>> getFarmsByFarmerId(String farmerId) async {
     try {
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('farmerId', isEqualTo: farmerId)
-          .orderBy('createdAt', descending: true)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('farmerId', isEqualTo: farmerId)
+              .orderBy('createdAt', descending: true)
+              .get();
 
       return querySnapshot.docs
           .map((doc) => FarmModel.fromFirestore(doc))
@@ -32,9 +32,9 @@ class FarmRepositoryImpl implements FarmRepository {
   Future<FarmEntity?> getFarmById(String farmId) async {
     try {
       final doc = await _firestore.collection(_collection).doc(farmId).get();
-      
+
       if (!doc.exists) return null;
-      
+
       return FarmModel.fromFirestore(doc);
     } catch (e) {
       throw Exception('Failed to get farm: $e');
@@ -71,11 +71,14 @@ class FarmRepositoryImpl implements FarmRepository {
       if (data.description != null) updateMap['description'] = data.description;
       if (data.coordinates != null) updateMap['coordinates'] = data.coordinates;
       if (data.soilType != null) updateMap['soilType'] = data.soilType;
-      if (data.irrigationType != null) updateMap['irrigationType'] = data.irrigationType;
+      if (data.irrigationType != null) {
+        updateMap['irrigationType'] = data.irrigationType;
+      }
 
       await _firestore.collection(_collection).doc(farmId).update(updateMap);
 
-      final updatedDoc = await _firestore.collection(_collection).doc(farmId).get();
+      final updatedDoc =
+          await _firestore.collection(_collection).doc(farmId).get();
       return FarmModel.fromFirestore(updatedDoc);
     } catch (e) {
       throw Exception('Failed to update farm: $e');
@@ -94,21 +97,24 @@ class FarmRepositoryImpl implements FarmRepository {
   @override
   Future<List<FarmEntity>> searchFarms(String farmerId, String query) async {
     try {
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('farmerId', isEqualTo: farmerId)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('farmerId', isEqualTo: farmerId)
+              .get();
 
-      final farms = querySnapshot.docs
-          .map((doc) => FarmModel.fromFirestore(doc))
-          .toList();
+      final farms =
+          querySnapshot.docs
+              .map((doc) => FarmModel.fromFirestore(doc))
+              .toList();
 
       // Filter by query (name or location)
-      final filteredFarms = farms.where((farm) {
-        final searchQuery = query.toLowerCase();
-        return farm.name.toLowerCase().contains(searchQuery) ||
-               farm.location.toLowerCase().contains(searchQuery);
-      }).toList();
+      final filteredFarms =
+          farms.where((farm) {
+            final searchQuery = query.toLowerCase();
+            return farm.name.toLowerCase().contains(searchQuery) ||
+                farm.location.toLowerCase().contains(searchQuery);
+          }).toList();
 
       return filteredFarms;
     } catch (e) {
@@ -117,14 +123,18 @@ class FarmRepositoryImpl implements FarmRepository {
   }
 
   @override
-  Future<List<FarmEntity>> getFarmsByStatus(String farmerId, FarmStatus status) async {
+  Future<List<FarmEntity>> getFarmsByStatus(
+    String farmerId,
+    FarmStatus status,
+  ) async {
     try {
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('farmerId', isEqualTo: farmerId)
-          .where('status', isEqualTo: status.value)
-          .orderBy('createdAt', descending: true)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('farmerId', isEqualTo: farmerId)
+              .where('status', isEqualTo: status.value)
+              .orderBy('createdAt', descending: true)
+              .get();
 
       return querySnapshot.docs
           .map((doc) => FarmModel.fromFirestore(doc))
@@ -138,13 +148,19 @@ class FarmRepositoryImpl implements FarmRepository {
   Future<Map<String, dynamic>> getFarmStatistics(String farmerId) async {
     try {
       final farms = await getFarmsByFarmerId(farmerId);
-      
+
       final totalFarms = farms.length;
-      final totalSize = farms.fold<double>(0, (sum, farm) => sum + farm.size);
-      final activeFarms = farms.where((farm) => farm.status == FarmStatus.active).length;
-      final planningFarms = farms.where((farm) => farm.status == FarmStatus.planning).length;
-      final harvestingFarms = farms.where((farm) => farm.status == FarmStatus.harvesting).length;
-      
+      final totalSize = farms.fold<double>(
+        0,
+        (total, farm) => total + farm.size,
+      );
+      final activeFarms =
+          farms.where((farm) => farm.status == FarmStatus.active).length;
+      final planningFarms =
+          farms.where((farm) => farm.status == FarmStatus.planning).length;
+      final harvestingFarms =
+          farms.where((farm) => farm.status == FarmStatus.harvesting).length;
+
       // Get unique crop types
       final allCropTypes = <String>{};
       for (final farm in farms) {
@@ -166,7 +182,10 @@ class FarmRepositoryImpl implements FarmRepository {
   }
 
   @override
-  Future<void> updateFarmLastActivity(String farmId, DateTime lastActivity) async {
+  Future<void> updateFarmLastActivity(
+    String farmId,
+    DateTime lastActivity,
+  ) async {
     try {
       await _firestore.collection(_collection).doc(farmId).update({
         'lastActivity': Timestamp.fromDate(lastActivity),
@@ -185,14 +204,15 @@ class FarmRepositoryImpl implements FarmRepository {
       if (!userDoc.exists) return false;
 
       final userData = userDoc.data()!;
-      final subscriptionPackage = userData['subscriptionPackage'] ?? 'free_tier';
-      
+      final subscriptionPackage =
+          userData['subscriptionPackage'] ?? 'free_tier';
+
       // Free tier users can only have 1 farm
       if (subscriptionPackage == 'free_tier') {
         final farmCount = await getFarmCount(farmerId);
         return farmCount < 1;
       }
-      
+
       // Serengeti and Tanzanite users have unlimited farms
       return true;
     } catch (e) {
@@ -203,10 +223,11 @@ class FarmRepositoryImpl implements FarmRepository {
   @override
   Future<int> getFarmCount(String farmerId) async {
     try {
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('farmerId', isEqualTo: farmerId)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('farmerId', isEqualTo: farmerId)
+              .get();
 
       return querySnapshot.docs.length;
     } catch (e) {

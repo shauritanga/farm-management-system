@@ -45,5 +45,30 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow access to your photo library to select images</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow access to your camera to take photos</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow access to your microphone for video recording</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide accurate weather information for your farm location.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access to provide accurate weather information for your farm location.</string>
+	<key>GIDClientID</key>
+	<string>582140752319-532l1bojg4aupvhl0eucalsir8r8h8nq.apps.googleusercontent.com</string>
+
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.582140752319-532l1bojg4aupvhl0eucalsir8r8h8nq</string>
+			</array>
+		</dict>
+	</array>
+
 </dict>
 </plist>

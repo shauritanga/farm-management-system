@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "582140752319-su5vvrjsr034opj5vv04j9bghrmp4ud6.apps.googleusercontent.com",
+          "client_id": "582140752319-igg9aihc0q9jt3rlmkh5ti511s90shhh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.agripoa",
-            "certificate_hash": "39c3a8c3072c2e6ff8f4bc3d21ab9667eb7f717f"
+            "certificate_hash": "5331cea378f747065b663b72d4c60b43e5b0c4da"
           }
         },
         {

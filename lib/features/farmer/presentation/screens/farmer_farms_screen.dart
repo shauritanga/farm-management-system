@@ -7,6 +7,7 @@ import '../../../auth/presentation/states/auth_state.dart';
 import '../../../subscription/domain/entities/subscription.dart';
 import '../../../farm/presentation/providers/farm_provider.dart';
 import '../../../farm/domain/entities/farm.dart';
+import '../../../farm/presentation/screens/farm_details_screen.dart';
 import 'add_farm_screen.dart';
 import 'farm_user_assignment_screen.dart';
 
@@ -145,6 +146,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
       backgroundColor: theme.colorScheme.primary,
       foregroundColor: Colors.white,
       elevation: 0,
+      centerTitle: false,
       title: Text(
         'My Farms',
         style: GoogleFonts.poppins(
@@ -312,111 +314,6 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
     );
   }
 
-  /// Build search and filter section
-  Widget _buildSearchAndFilter(ThemeData theme) {
-    return Container(
-      padding: EdgeInsets.all(ResponsiveUtils.spacing16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
-            blurRadius: ResponsiveUtils.spacing4,
-            offset: Offset(0, ResponsiveUtils.spacing2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Search bar
-          TextField(
-            controller: _searchController,
-            onChanged: _onSearchChanged,
-            decoration: InputDecoration(
-              hintText: 'Search farms...',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon:
-                  _searchQuery.isNotEmpty
-                      ? IconButton(
-                        onPressed: () {
-                          _searchController.clear();
-                          _onSearchChanged('');
-                        },
-                        icon: const Icon(Icons.clear),
-                      )
-                      : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(ResponsiveUtils.radius12),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: theme.colorScheme.surface,
-            ),
-          ),
-
-          SizedBox(height: ResponsiveUtils.height12),
-
-          // Filter chips
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildFilterChip(theme, 'All', _selectedFilter == 'All'),
-                SizedBox(width: ResponsiveUtils.spacing8),
-                _buildFilterChip(theme, 'Active', _selectedFilter == 'Active'),
-                SizedBox(width: ResponsiveUtils.spacing8),
-                _buildFilterChip(
-                  theme,
-                  'Planning',
-                  _selectedFilter == 'Planning',
-                ),
-                SizedBox(width: ResponsiveUtils.spacing8),
-                _buildFilterChip(
-                  theme,
-                  'Harvesting',
-                  _selectedFilter == 'Harvesting',
-                ),
-                SizedBox(width: ResponsiveUtils.spacing8),
-                _buildFilterChip(
-                  theme,
-                  'Inactive',
-                  _selectedFilter == 'Inactive',
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Build filter chip
-  Widget _buildFilterChip(ThemeData theme, String label, bool isSelected) {
-    return FilterChip(
-      label: Text(
-        label,
-        style: GoogleFonts.inter(
-          fontSize: ResponsiveUtils.fontSize12,
-          fontWeight: FontWeight.w500,
-          color: isSelected ? Colors.white : theme.colorScheme.onSurface,
-        ),
-      ),
-      selected: isSelected,
-      onSelected: (selected) {
-        _onFilterChanged(selected ? label : 'All');
-      },
-      backgroundColor: theme.colorScheme.surface,
-      selectedColor: theme.colorScheme.primary,
-      checkmarkColor: Colors.white,
-      side: BorderSide(
-        color:
-            isSelected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.outline.withValues(alpha: 0.3),
-      ),
-    );
-  }
-
   /// Build tab bar
   Widget _buildTabBar(ThemeData theme) {
     return Container(
@@ -453,79 +350,105 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
   ) {
     final farmState = ref.watch(farmProvider);
 
-    return farmState.maybeWhen(
-      initial: () => const Center(child: Text('No farms loaded')),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error:
-          (message) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  size: ResponsiveUtils.iconSize64,
-                  color: theme.colorScheme.error,
-                ),
-                SizedBox(height: ResponsiveUtils.height16),
-                Text(
-                  'Error loading farms',
-                  style: GoogleFonts.poppins(
-                    fontSize: ResponsiveUtils.fontSize18,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.error,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.height8),
-                Text(
-                  message,
-                  style: GoogleFonts.inter(
-                    fontSize: ResponsiveUtils.fontSize14,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: ResponsiveUtils.height16),
-                ElevatedButton(
-                  onPressed: () {
-                    final authState = ref.read(authProvider);
-                    if (authState is AuthAuthenticated) {
-                      ref
-                          .read(farmProvider.notifier)
-                          .loadFarms(authState.user.id);
-                    }
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
+    final stateString = farmState.toString();
+
+    if (stateString.contains('FarmState.loading')) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (stateString.contains('FarmState.error')) {
+      // Extract error message from the state
+      String errorMessage = 'Unknown error';
+      try {
+        final match = RegExp(r'message: (.+)\)').firstMatch(stateString);
+        if (match != null) {
+          errorMessage = match.group(1) ?? 'Unknown error';
+        }
+      } catch (e) {
+        // Fallback to default message
+      }
+
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: ResponsiveUtils.iconSize64,
+              color: theme.colorScheme.error,
             ),
-          ),
-      loaded: (farms) {
-        if (farms.isEmpty) {
-          return _buildEmptyState(theme, currentPackage);
-        }
-
-        final filteredFarms = _filterFarms(farms);
-
-        if (filteredFarms.isEmpty) {
-          return _buildNoResultsState(theme);
-        }
-
-        // Build content with integrated compact statistics
-        return CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            // Compact statistics header
-            SliverToBoxAdapter(child: _buildCompactStatistics(theme, farmerId)),
-
-            // Farms content
-            _isGridView
-                ? _buildFarmsGridSliver(theme, filteredFarms)
-                : _buildFarmsListSliver(theme, filteredFarms),
+            SizedBox(height: ResponsiveUtils.height16),
+            Text(
+              'Error loading farms',
+              style: GoogleFonts.poppins(
+                fontSize: ResponsiveUtils.fontSize18,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.error,
+              ),
+            ),
+            SizedBox(height: ResponsiveUtils.height8),
+            Text(
+              errorMessage,
+              style: GoogleFonts.inter(
+                fontSize: ResponsiveUtils.fontSize14,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: ResponsiveUtils.height16),
+            ElevatedButton(
+              onPressed: () {
+                final authState = ref.read(authProvider);
+                if (authState is AuthAuthenticated) {
+                  ref.read(farmProvider.notifier).loadFarms(authState.user.id);
+                }
+              },
+              child: const Text('Retry'),
+            ),
           ],
-        );
-      },
-      orElse: () => const Center(child: Text('Unknown state')),
-    );
+        ),
+      );
+    } else if (stateString.contains('FarmState.loaded')) {
+      // Extract farms from the state using reflection-like approach
+      List<FarmEntity> farms = [];
+      try {
+        // Use the extension method from FarmState if available
+        if (farmState.toString().contains('farms: [')) {
+          // For now, we'll use a workaround to get farms
+          final dynamic dynamicState = farmState;
+          if (dynamicState.farms != null) {
+            farms = dynamicState.farms as List<FarmEntity>;
+          }
+        }
+      } catch (e) {
+        // Fallback - this shouldn't happen in normal operation
+        return const Center(child: Text('Error accessing farm data'));
+      }
+
+      if (farms.isEmpty) {
+        return _buildEmptyState(theme, currentPackage);
+      }
+
+      final filteredFarms = _filterFarms(farms);
+
+      if (filteredFarms.isEmpty) {
+        return _buildNoResultsState(theme);
+      }
+
+      // Build content with integrated compact statistics
+      return CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          // Compact statistics header
+          SliverToBoxAdapter(child: _buildCompactStatistics(theme, farmerId)),
+
+          // Farms content
+          _isGridView
+              ? _buildFarmsGridSliver(theme, filteredFarms)
+              : _buildFarmsListSliver(theme, filteredFarms),
+        ],
+      );
+    } else {
+      return const Center(child: Text('No farms loaded'));
+    }
   }
 
   /// Build compact statistics section
@@ -691,75 +614,6 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
     );
   }
 
-  /// Build farms tab
-  Widget _buildFarmsTab(ThemeData theme, SubscriptionPackage currentPackage) {
-    final farmState = ref.watch(farmProvider);
-
-    return farmState.maybeWhen(
-      initial: () => const Center(child: Text('No farms loaded')),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error:
-          (message) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  size: ResponsiveUtils.iconSize64,
-                  color: theme.colorScheme.error,
-                ),
-                SizedBox(height: ResponsiveUtils.height16),
-                Text(
-                  'Error loading farms',
-                  style: GoogleFonts.poppins(
-                    fontSize: ResponsiveUtils.fontSize18,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.error,
-                  ),
-                ),
-                SizedBox(height: ResponsiveUtils.height8),
-                Text(
-                  message,
-                  style: GoogleFonts.inter(
-                    fontSize: ResponsiveUtils.fontSize14,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: ResponsiveUtils.height16),
-                ElevatedButton(
-                  onPressed: () {
-                    final authState = ref.read(authProvider);
-                    if (authState is AuthAuthenticated) {
-                      ref
-                          .read(farmProvider.notifier)
-                          .loadFarms(authState.user.id);
-                    }
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          ),
-      loaded: (farms) {
-        if (farms.isEmpty) {
-          return _buildEmptyState(theme, currentPackage);
-        }
-
-        final filteredFarms = _filterFarms(farms);
-
-        if (filteredFarms.isEmpty) {
-          return _buildNoResultsState(theme);
-        }
-
-        return _isGridView
-            ? _buildFarmsGrid(theme, filteredFarms)
-            : _buildFarmsList(theme, filteredFarms);
-      },
-      orElse: () => const Center(child: Text('Unknown state')),
-    );
-  }
-
   /// Build activities tab
   Widget _buildActivitiesTab(ThemeData theme) {
     return const Center(child: Text('Activities feature coming soon'));
@@ -792,23 +646,44 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
   }
 
   /// Build floating action button
-  Widget _buildFloatingActionButton(
+  Widget? _buildFloatingActionButton(
     ThemeData theme,
     SubscriptionPackage currentPackage,
   ) {
-    return FloatingActionButton.extended(
-      onPressed: () => _showCreateFarmDialog(currentPackage),
-      backgroundColor: theme.colorScheme.primary,
-      foregroundColor: Colors.white,
-      icon: const Icon(Icons.add),
-      label: Text(
-        'Add Farm',
-        style: GoogleFonts.inter(
-          fontSize: ResponsiveUtils.fontSize14,
-          fontWeight: FontWeight.w600,
+    final farmState = ref.watch(farmProvider);
+    final stateString = farmState.toString();
+
+    // Don't show FAB when there are no farms (empty state has its own button)
+    if (stateString.contains('FarmState.loaded')) {
+      // Extract farms from the state
+      try {
+        final dynamic dynamicState = farmState;
+        if (dynamicState.farms != null) {
+          final farms = dynamicState.farms as List<FarmEntity>;
+          if (farms.isEmpty) {
+            return null; // Hide FAB when no farms exist
+          }
+        }
+      } catch (e) {
+        // If we can't access farms, show the FAB anyway
+      }
+
+      return FloatingActionButton.extended(
+        onPressed: () => _showCreateFarmDialog(currentPackage),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: Text(
+          'Add Farm',
+          style: GoogleFonts.inter(
+            fontSize: ResponsiveUtils.fontSize14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+    return null; // Hide FAB in loading, error, or initial states
   }
 
   /// Filter farms based on selected filter and search query
@@ -935,40 +810,6 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
           ],
         ),
       ),
-    );
-  }
-
-  /// Build farms grid
-  Widget _buildFarmsGrid(ThemeData theme, List<FarmEntity> farms) {
-    return Padding(
-      padding: EdgeInsets.all(ResponsiveUtils.spacing16),
-      child: GridView.builder(
-        controller: _scrollController,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: ResponsiveUtils.spacing12,
-          mainAxisSpacing: ResponsiveUtils.spacing12,
-          childAspectRatio: 0.8,
-        ),
-        itemCount: farms.length,
-        itemBuilder: (context, index) {
-          final farm = farms[index];
-          return _buildFarmGridCard(theme, farm);
-        },
-      ),
-    );
-  }
-
-  /// Build farms list
-  Widget _buildFarmsList(ThemeData theme, List<FarmEntity> farms) {
-    return ListView.builder(
-      controller: _scrollController,
-      padding: EdgeInsets.all(ResponsiveUtils.spacing16),
-      itemCount: farms.length,
-      itemBuilder: (context, index) {
-        final farm = farms[index];
-        return _buildFarmListCard(theme, farm);
-      },
     );
   }
 
@@ -1445,8 +1286,8 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
 
   /// Navigate to farm details
   void _navigateToFarmDetails(FarmEntity farm) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Navigate to ${farm.name} details')));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => FarmDetailsScreen(farm: farm)),
+    );
   }
 }
