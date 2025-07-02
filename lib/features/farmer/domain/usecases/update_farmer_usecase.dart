@@ -43,25 +43,25 @@ class UpdateFarmerUsecase {
       if (data.phone!.trim().isEmpty) {
         throw Exception('Phone number cannot be empty');
       }
-      
+
       // Validate phone number format
       if (!RegExp(r'^[0-9+\-\s()]+$').hasMatch(data.phone!)) {
         throw Exception('Invalid phone number format');
       }
     }
 
-    if (data.totalNumberOfTrees != null && data.totalNumberOfTrees! < 0) {
+    if (data.totalTrees != null && data.totalTrees! < 0) {
       throw Exception('Total number of trees cannot be negative');
     }
 
-    if (data.totalNumberOfTreesWithFruit != null && data.totalNumberOfTreesWithFruit! < 0) {
+    if (data.fruitingTrees != null && data.fruitingTrees! < 0) {
       throw Exception('Number of fruiting trees cannot be negative');
     }
 
     // Check fruiting trees vs total trees
-    final totalTrees = data.totalNumberOfTrees ?? existingFarmer.totalNumberOfTrees;
-    final fruitingTrees = data.totalNumberOfTreesWithFruit ?? existingFarmer.totalNumberOfTreesWithFruit;
-    
+    final totalTrees = data.totalTrees ?? existingFarmer.totalTrees;
+    final fruitingTrees = data.fruitingTrees ?? existingFarmer.fruitingTrees;
+
     if (fruitingTrees > totalTrees) {
       throw Exception('Fruiting trees cannot exceed total trees');
     }

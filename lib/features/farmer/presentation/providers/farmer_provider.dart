@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/repositories/farmer_repository_impl.dart';
+import '../../data/repositories/firestore_farmer_repository_impl.dart';
 import '../../domain/entities/farmer.dart';
 import '../../domain/usecases/get_all_farmers_usecase.dart';
 import '../../domain/usecases/search_farmers_usecase.dart';

@@ -27,8 +27,8 @@ class FarmerEntity extends Equatable {
   final Gender gender;
   final DateTime dateOfBirth;
   final String phone;
-  final int totalNumberOfTrees;
-  final int totalNumberOfTreesWithFruit;
+  final int totalTrees;
+  final int fruitingTrees;
   final String bankNumber;
   final String bankName;
   final List<String> crops;
@@ -44,8 +44,8 @@ class FarmerEntity extends Equatable {
     required this.gender,
     required this.dateOfBirth,
     required this.phone,
-    required this.totalNumberOfTrees,
-    required this.totalNumberOfTreesWithFruit,
+    required this.totalTrees,
+    required this.fruitingTrees,
     required this.bankNumber,
     required this.bankName,
     required this.crops,
@@ -66,8 +66,8 @@ class FarmerEntity extends Equatable {
 
   /// Calculate percentage of trees with fruit
   double get fruitingTreesPercentage {
-    if (totalNumberOfTrees == 0) return 0.0;
-    return (totalNumberOfTreesWithFruit / totalNumberOfTrees) * 100;
+    if (totalTrees == 0) return 0.0;
+    return (fruitingTrees / totalTrees) * 100;
   }
 
   /// Check if farmer has valid bank details
@@ -97,8 +97,8 @@ class FarmerEntity extends Equatable {
     gender,
     dateOfBirth,
     phone,
-    totalNumberOfTrees,
-    totalNumberOfTreesWithFruit,
+    totalTrees,
+    fruitingTrees,
     bankNumber,
     bankName,
     crops,
@@ -115,8 +115,8 @@ class FarmerEntity extends Equatable {
     Gender? gender,
     DateTime? dateOfBirth,
     String? phone,
-    int? totalNumberOfTrees,
-    int? totalNumberOfTreesWithFruit,
+    int? totalTrees,
+    int? fruitingTrees,
     String? bankNumber,
     String? bankName,
     List<String>? crops,
@@ -132,9 +132,8 @@ class FarmerEntity extends Equatable {
       gender: gender ?? this.gender,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       phone: phone ?? this.phone,
-      totalNumberOfTrees: totalNumberOfTrees ?? this.totalNumberOfTrees,
-      totalNumberOfTreesWithFruit:
-          totalNumberOfTreesWithFruit ?? this.totalNumberOfTreesWithFruit,
+      totalTrees: totalTrees ?? this.totalTrees,
+      fruitingTrees: fruitingTrees ?? this.fruitingTrees,
       bankNumber: bankNumber ?? this.bankNumber,
       bankName: bankName ?? this.bankName,
       crops: crops ?? this.crops,
@@ -153,8 +152,8 @@ class CreateFarmerData {
   final Gender gender;
   final DateTime dateOfBirth;
   final String phone;
-  final int totalNumberOfTrees;
-  final int totalNumberOfTreesWithFruit;
+  final int totalTrees;
+  final int fruitingTrees;
   final String bankNumber;
   final String bankName;
   final List<String> crops;
@@ -167,8 +166,8 @@ class CreateFarmerData {
     required this.gender,
     required this.dateOfBirth,
     required this.phone,
-    required this.totalNumberOfTrees,
-    required this.totalNumberOfTreesWithFruit,
+    required this.totalTrees,
+    required this.fruitingTrees,
     required this.bankNumber,
     required this.bankName,
     required this.crops,
@@ -183,8 +182,8 @@ class UpdateFarmerData {
   final Gender? gender;
   final DateTime? dateOfBirth;
   final String? phone;
-  final int? totalNumberOfTrees;
-  final int? totalNumberOfTreesWithFruit;
+  final int? totalTrees;
+  final int? fruitingTrees;
   final String? bankNumber;
   final String? bankName;
   final List<String>? crops;
@@ -196,8 +195,8 @@ class UpdateFarmerData {
     this.gender,
     this.dateOfBirth,
     this.phone,
-    this.totalNumberOfTrees,
-    this.totalNumberOfTreesWithFruit,
+    this.totalTrees,
+    this.fruitingTrees,
     this.bankNumber,
     this.bankName,
     this.crops,

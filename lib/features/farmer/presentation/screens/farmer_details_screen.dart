@@ -848,7 +848,7 @@ class _FarmerDetailsScreenState extends ConsumerState<FarmerDetailsScreen>
           theme,
           icon: Icons.park,
           title: 'Total Trees',
-          value: _farmer!.totalNumberOfTrees.toString(),
+          value: _farmer!.totalTrees.toString(),
           color: const Color(0xFF4CAF50),
           delay: 0,
         ),
@@ -856,7 +856,7 @@ class _FarmerDetailsScreenState extends ConsumerState<FarmerDetailsScreen>
           theme,
           icon: Icons.eco,
           title: 'Fruiting Trees',
-          value: _farmer!.totalNumberOfTreesWithFruit.toString(),
+          value: _farmer!.fruitingTrees.toString(),
           color: const Color(0xFFFF9800),
           delay: 100,
         ),
@@ -873,7 +873,7 @@ class _FarmerDetailsScreenState extends ConsumerState<FarmerDetailsScreen>
           icon: Icons.trending_up,
           title: 'Productivity',
           value:
-              '${((_farmer!.totalNumberOfTreesWithFruit / _farmer!.totalNumberOfTrees) * 100).toStringAsFixed(0)}%',
+              '${((_farmer!.fruitingTrees / _farmer!.totalTrees) * 100).toStringAsFixed(0)}%',
           color: const Color(0xFF9C27B0),
           delay: 300,
         ),
@@ -996,22 +996,16 @@ class _FarmerDetailsScreenState extends ConsumerState<FarmerDetailsScreen>
           title: 'Farming Details',
           icon: Icons.agriculture,
           children: [
-            _buildInfoRow(
-              theme,
-              'Total Trees',
-              _farmer!.totalNumberOfTrees.toString(),
-            ),
+            _buildInfoRow(theme, 'Total Trees', _farmer!.totalTrees.toString()),
             _buildInfoRow(
               theme,
               'Fruiting Trees',
-              _farmer!.totalNumberOfTreesWithFruit.toString(),
+              _farmer!.fruitingTrees.toString(),
             ),
             _buildInfoRow(
               theme,
               'Non-Fruiting Trees',
-              (_farmer!.totalNumberOfTrees -
-                      _farmer!.totalNumberOfTreesWithFruit)
-                  .toString(),
+              (_farmer!.totalTrees - _farmer!.fruitingTrees).toString(),
             ),
             _buildCropsSection(theme),
           ],

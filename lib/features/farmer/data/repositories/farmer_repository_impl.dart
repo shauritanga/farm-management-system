@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/farmer.dart';
 import '../../domain/repositories/farmer_repository.dart';
 import '../models/farmer_model.dart';
 import '../../../../core/utils/data.dart' as mock_data;
+import 'firestore_farmer_repository_impl.dart';
 
 /// Implementation of farmer repository
 class FarmerRepositoryImpl implements FarmerRepository {
@@ -128,12 +130,12 @@ class FarmerRepositoryImpl implements FarmerRepository {
 
           // Filter by tree count range
           if (criteria.minTrees != null &&
-              farmer.totalNumberOfTrees < criteria.minTrees!) {
+              farmer.totalTrees < criteria.minTrees!) {
             return false;
           }
 
           if (criteria.maxTrees != null &&
-              farmer.totalNumberOfTrees > criteria.maxTrees!) {
+              farmer.totalTrees > criteria.maxTrees!) {
             return false;
           }
 
@@ -162,8 +164,8 @@ class FarmerRepositoryImpl implements FarmerRepository {
       gender: data.gender,
       dateOfBirth: data.dateOfBirth,
       phone: data.phone,
-      totalNumberOfTrees: data.totalNumberOfTrees,
-      totalNumberOfTreesWithFruit: data.totalNumberOfTreesWithFruit,
+      totalTrees: data.totalTrees,
+      fruitingTrees: data.fruitingTrees,
       bankNumber: data.bankNumber,
       bankName: data.bankName,
       crops: data.crops,
@@ -198,8 +200,8 @@ class FarmerRepositoryImpl implements FarmerRepository {
       gender: data.gender,
       dateOfBirth: data.dateOfBirth,
       phone: data.phone,
-      totalNumberOfTrees: data.totalNumberOfTrees,
-      totalNumberOfTreesWithFruit: data.totalNumberOfTreesWithFruit,
+      totalTrees: data.totalTrees,
+      fruitingTrees: data.fruitingTrees,
       bankNumber: data.bankNumber,
       bankName: data.bankName,
       crops: data.crops,
@@ -271,13 +273,10 @@ class FarmerRepositoryImpl implements FarmerRepository {
     final totalFarmers = _farmers.length;
     final maleCount = _farmers.where((f) => f.gender == Gender.male).length;
     final femaleCount = _farmers.where((f) => f.gender == Gender.female).length;
-    final totalTrees = _farmers.fold<int>(
-      0,
-      (sum, f) => sum + f.totalNumberOfTrees,
-    );
+    final totalTrees = _farmers.fold<int>(0, (sum, f) => sum + f.totalTrees);
     final totalFruitingTrees = _farmers.fold<int>(
       0,
-      (sum, f) => sum + f.totalNumberOfTreesWithFruit,
+      (sum, f) => sum + f.fruitingTrees,
     );
 
     final averageTreesPerFarmer =
@@ -341,7 +340,7 @@ class FarmerRepositoryImpl implements FarmerRepository {
 
     for (final farmer in _farmers) {
       buffer.writeln(
-        '${farmer.id},${farmer.name},${farmer.zone},${farmer.village},${farmer.gender.value},${farmer.dateOfBirth.toIso8601String()},${farmer.phone},${farmer.totalNumberOfTrees},${farmer.totalNumberOfTreesWithFruit},${farmer.bankNumber},${farmer.bankName},"${farmer.crops.join(', ')}"',
+        '${farmer.id},${farmer.name},${farmer.zone},${farmer.village},${farmer.gender.value},${farmer.dateOfBirth.toIso8601String()},${farmer.phone},${farmer.totalTrees},${farmer.fruitingTrees},${farmer.bankNumber},${farmer.bankName},"${farmer.crops.join(', ')}"',
       );
     }
 
@@ -421,7 +420,8 @@ class FarmerRepositoryImpl implements FarmerRepository {
   }
 }
 
-// Provider for farmer repository
+// Provider for farmer repository - using Firestore for production
 final farmerRepositoryProvider = Provider<FarmerRepository>((ref) {
-  return FarmerRepositoryImpl();
+  // Use Firestore implementation for production
+  return FirestoreFarmerRepositoryImpl(FirebaseFirestore.instance);
 });

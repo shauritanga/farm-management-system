@@ -5,11 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/onboarding/presentation/providers/onboarding_provider.dart';
-import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/enhanced_login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/auth/presentation/providers/mobile_auth_provider.dart';
 import '../../features/auth/presentation/states/auth_state.dart';
 import '../theme/screens/theme_demo_screen.dart';
+import 'auth_guard.dart';
 
 // Farmer screens
 import '../../features/farmer/presentation/screens/farmer_home_shell.dart';
@@ -32,6 +33,7 @@ import '../../features/subscription/presentation/screens/subscription_screen.dar
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
+    redirect: AuthGuard.redirect,
     routes: [
       // Splash/Initial route
       GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
@@ -42,8 +44,11 @@ class AppRouter {
         builder: (context, state) => const OnboardingScreen(),
       ),
 
-      // Login route
-      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      // Login route - Enhanced with mobile features
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const EnhancedLoginScreen(),
+      ),
 
       // Register route
       GoRoute(
@@ -117,10 +122,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/cooperative-farmers',
-                builder:
-                    (context, state) => CooperativeFarmersScreen(
-                      cooperativeId: state.extra as String? ?? 'coop_001',
-                    ),
+                builder: (context, state) => const CooperativeFarmersScreen(),
               ),
             ],
           ),
@@ -187,10 +189,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     if (mounted) {
       if (hasCompletedOnboarding) {
-        // Check if user is already authenticated
-        await ref.read(authProvider.notifier).initializeAuth();
+        // Check if user is already authenticated using mobile auth provider
+        await ref.read(mobileAuthProvider.notifier).initializeAuth();
         if (mounted) {
-          final authState = ref.read(authProvider);
+          final authState = ref.read(mobileAuthProvider);
           if (authState is AuthAuthenticated) {
             // Navigate based on user type
             if (authState.user.isFarmer) {

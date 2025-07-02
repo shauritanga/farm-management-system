@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/utils/responsive_utils.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/providers/mobile_auth_provider.dart';
 import '../../../auth/presentation/states/auth_state.dart';
 import '../../../subscription/domain/entities/subscription.dart';
 import '../../../weather/presentation/providers/weather_provider.dart';
@@ -35,7 +35,7 @@ class _FarmerDashboardScreenState extends ConsumerState<FarmerDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(mobileAuthProvider);
 
     if (authState is! AuthAuthenticated) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -224,7 +224,7 @@ class _FarmerDashboardScreenState extends ConsumerState<FarmerDashboardScreen> {
 
   /// Handle refresh
   Future<void> _handleRefresh() async {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mobileAuthProvider);
     if (authState is! AuthAuthenticated) return;
 
     final userId = authState.user.id;
@@ -994,7 +994,7 @@ class _FarmerDashboardScreenState extends ConsumerState<FarmerDashboardScreen> {
 
   /// Build recent activities section
   Widget _buildRecentActivitiesSection(ThemeData theme) {
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(mobileAuthProvider);
     if (authState is! AuthAuthenticated) {
       return const SizedBox.shrink();
     }
@@ -1426,7 +1426,7 @@ class _FarmerDashboardScreenState extends ConsumerState<FarmerDashboardScreen> {
 
   /// Add activity action
   void _addActivity() {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mobileAuthProvider);
     if (authState is! AuthAuthenticated) return;
 
     // For now, show a snackbar since add activity screen might not be implemented yet
@@ -1437,7 +1437,7 @@ class _FarmerDashboardScreenState extends ConsumerState<FarmerDashboardScreen> {
 
   /// Record harvest action
   void _recordHarvest() {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mobileAuthProvider);
     if (authState is! AuthAuthenticated) return;
 
     // For now, show a snackbar since record harvest screen might not be implemented yet

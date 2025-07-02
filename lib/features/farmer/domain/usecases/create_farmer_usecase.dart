@@ -48,15 +48,15 @@ class CreateFarmerUsecase {
       throw Exception('Invalid phone number format');
     }
 
-    if (data.totalNumberOfTrees < 0) {
+    if (data.totalTrees < 0) {
       throw Exception('Total number of trees cannot be negative');
     }
 
-    if (data.totalNumberOfTreesWithFruit < 0) {
+    if (data.fruitingTrees < 0) {
       throw Exception('Number of fruiting trees cannot be negative');
     }
 
-    if (data.totalNumberOfTreesWithFruit > data.totalNumberOfTrees) {
+    if (data.fruitingTrees > data.totalTrees) {
       throw Exception('Fruiting trees cannot exceed total trees');
     }
 

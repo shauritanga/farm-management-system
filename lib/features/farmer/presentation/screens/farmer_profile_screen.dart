@@ -11,7 +11,7 @@ import '../../../subscription/presentation/screens/subscription_screen.dart';
 import '../../../subscription/domain/entities/subscription.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/widgets/language_selector.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/providers/mobile_auth_provider.dart';
 import '../../../auth/presentation/states/auth_state.dart';
 
 /// Farmer profile screen with comprehensive functionality
@@ -31,7 +31,7 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(mobileAuthProvider);
 
     if (authState is! AuthAuthenticated) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -1309,7 +1309,7 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
   /// Upload image to Firebase Storage
   Future<String?> _uploadImageToFirebase(File imageFile) async {
     try {
-      final authState = ref.read(authProvider);
+      final authState = ref.read(mobileAuthProvider);
       if (authState is! AuthAuthenticated) return null;
       final user = authState.user;
 
@@ -1342,7 +1342,7 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
   /// Update user profile image URL
   Future<void> _updateUserProfileImage(String imageUrl) async {
     try {
-      final authState = ref.read(authProvider);
+      final authState = ref.read(mobileAuthProvider);
       if (authState is! AuthAuthenticated) return;
       final user = authState.user;
 
@@ -1352,7 +1352,7 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
       });
 
       // Refresh auth state to reflect changes
-      await ref.read(authProvider.notifier).initializeAuth();
+      await ref.read(mobileAuthProvider.notifier).initializeAuth();
     } catch (e) {
       print('Error updating profile image: $e');
       rethrow;
@@ -1366,7 +1366,7 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
         _isUploadingImage = true;
       });
 
-      final authState = ref.read(authProvider);
+      final authState = ref.read(mobileAuthProvider);
       if (authState is! AuthAuthenticated) return;
       final user = authState.user;
 
@@ -1376,7 +1376,7 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
       });
 
       // Refresh auth state to reflect changes
-      await ref.read(authProvider.notifier).initializeAuth();
+      await ref.read(mobileAuthProvider.notifier).initializeAuth();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1562,7 +1562,7 @@ class _FarmerProfileScreenState extends ConsumerState<FarmerProfileScreen> {
     final confirmed = await _showLogoutConfirmation();
     if (confirmed == true) {
       try {
-        await ref.read(authProvider.notifier).logout();
+        await ref.read(mobileAuthProvider.notifier).logout();
         if (mounted) {
           // Navigation will be handled by the auth state listener
         }

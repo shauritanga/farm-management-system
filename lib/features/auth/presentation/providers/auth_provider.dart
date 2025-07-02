@@ -6,6 +6,8 @@ import '../../domain/usecases/register_farmer_usecase.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/google_signin_usecase.dart';
 import '../states/auth_state.dart';
+import '../../../../core/services/biometric_auth_service.dart';
+import '../../../../core/services/offline_auth_service.dart';
 
 // Use case providers
 final loginUsecaseProvider = Provider<LoginUsecase>((ref) {
@@ -34,6 +36,15 @@ final resetPasswordUsecaseProvider = Provider<ResetPasswordUsecase>((ref) {
 
 final googleSignInUsecaseProvider = Provider<GoogleSignInUsecase>((ref) {
   return GoogleSignInUsecase(ref.read(authRepositoryProvider));
+});
+
+// Mobile service providers
+final biometricAuthServiceProvider = Provider<BiometricAuthService>((ref) {
+  return BiometricAuthService();
+});
+
+final offlineAuthServiceProvider = Provider<OfflineAuthService>((ref) {
+  return OfflineAuthService();
 });
 
 // Auth state notifier

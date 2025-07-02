@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/utils/responsive_utils.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/providers/mobile_auth_provider.dart';
 import '../../../auth/presentation/states/auth_state.dart';
 import '../../../subscription/domain/entities/subscription.dart';
 import '../../../farm/presentation/providers/farm_provider.dart';
@@ -46,7 +46,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
   }
 
   void _loadFarms() {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mobileAuthProvider);
     if (authState is AuthAuthenticated) {
       ref.read(farmProvider.notifier).loadFarms(authState.user.id);
     }
@@ -60,7 +60,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
     if (query.isEmpty) {
       _loadFarms();
     } else {
-      final authState = ref.read(authProvider);
+      final authState = ref.read(mobileAuthProvider);
       if (authState is AuthAuthenticated) {
         ref.read(farmProvider.notifier).searchFarms(authState.user.id, query);
       }
@@ -72,7 +72,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
       _selectedFilter = filter;
     });
 
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mobileAuthProvider);
     if (authState is AuthAuthenticated) {
       if (filter == 'All') {
         ref.read(farmProvider.notifier).loadFarms(authState.user.id);
@@ -91,7 +91,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(mobileAuthProvider);
 
     if (authState is! AuthAuthenticated) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -396,7 +396,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
             SizedBox(height: ResponsiveUtils.height16),
             ElevatedButton(
               onPressed: () {
-                final authState = ref.read(authProvider);
+                final authState = ref.read(mobileAuthProvider);
                 if (authState is AuthAuthenticated) {
                   ref.read(farmProvider.notifier).loadFarms(authState.user.id);
                 }
@@ -823,7 +823,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
 
     // If farm was created successfully, reload farms
     if (result == true) {
-      final authState = ref.read(authProvider);
+      final authState = ref.read(mobileAuthProvider);
       if (authState is AuthAuthenticated) {
         ref.read(farmProvider.notifier).loadFarms(authState.user.id);
       }
@@ -1124,7 +1124,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
       ),
       onSelected: (value) => _handleFarmMenuAction(value, farm),
       itemBuilder: (context) {
-        final authState = ref.read(authProvider);
+        final authState = ref.read(mobileAuthProvider);
         final currentPackage =
             authState is AuthAuthenticated
                 ? _getSubscriptionPackage(authState.user.subscriptionPackage)
@@ -1220,7 +1220,7 @@ class _FarmerFarmsScreenState extends ConsumerState<FarmerFarmsScreen>
 
   /// Navigate to user assignment screen
   void _navigateToUserAssignment(FarmEntity farm) {
-    final authState = ref.read(authProvider);
+    final authState = ref.read(mobileAuthProvider);
     if (authState is AuthAuthenticated) {
       Navigator.of(context).push(
         MaterialPageRoute(

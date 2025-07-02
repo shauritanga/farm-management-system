@@ -6,12 +6,16 @@ import '../../../farmer/domain/entities/farmer.dart';
 import '../../../farmer/presentation/providers/farmer_provider.dart';
 import '../../../farmer/presentation/screens/farmer_details_screen.dart';
 import '../../../farmer/presentation/states/farmer_state.dart';
+import '../../../auth/presentation/providers/mobile_auth_provider.dart';
+import '../../../auth/presentation/states/auth_state.dart';
+import '../../farmers/presentation/widgets/add_farmer_modal.dart';
+import '../../farmers/presentation/widgets/edit_farmer_modal.dart';
+import '../../farmers/domain/entities/farmer_entity.dart' as new_farmer_entity;
+import '../providers/recent_activities_provider.dart';
 
 /// Professional cooperative farmers management screen following clean architecture
 class CooperativeFarmersScreen extends ConsumerStatefulWidget {
-  final String cooperativeId;
-
-  const CooperativeFarmersScreen({super.key, required this.cooperativeId});
+  const CooperativeFarmersScreen({super.key});
 
   @override
   ConsumerState<CooperativeFarmersScreen> createState() =>
@@ -21,19 +25,36 @@ class CooperativeFarmersScreen extends ConsumerStatefulWidget {
 class _CooperativeFarmersScreenState
     extends ConsumerState<CooperativeFarmersScreen> {
   final ScrollController _scrollController = ScrollController();
+  String? _cooperativeId;
 
   @override
   void initState() {
     super.initState();
-    // Load farmers using clean architecture with cooperative ID
+    // Load farmers using clean architecture with cooperative ID from current user
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref
-          .read(farmerListProvider.notifier)
-          .setCooperativeId(widget.cooperativeId);
-      ref
-          .read(farmerListProvider.notifier)
-          .loadFarmers(cooperativeId: widget.cooperativeId);
+      _loadFarmersForCurrentUser();
     });
+  }
+
+  void _loadFarmersForCurrentUser() {
+    final authState = ref.read(mobileAuthProvider);
+    if (authState is AuthAuthenticated) {
+      final cooperativeId = authState.user.cooperativeId;
+      if (cooperativeId != null && cooperativeId.isNotEmpty) {
+        setState(() {
+          _cooperativeId = cooperativeId;
+        });
+        ref.read(farmerListProvider.notifier).setCooperativeId(cooperativeId);
+        ref
+            .read(farmerListProvider.notifier)
+            .loadFarmers(cooperativeId: cooperativeId);
+      } else {
+        // Handle case where user doesn't have a cooperativeId
+        setState(() {
+          _cooperativeId = null;
+        });
+      }
+    }
   }
 
   @override
@@ -62,26 +83,48 @@ class _CooperativeFarmersScreenState
   }
 
   void _addNewFarmer() {
-    // TODO: Navigate to add farmer screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Add farmer functionality coming soon',
-          style: GoogleFonts.inter(fontSize: ResponsiveUtils.fontSize14),
+    if (_cooperativeId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Unable to add farmer: Cooperative not found',
+            style: GoogleFonts.inter(fontSize: ResponsiveUtils.fontSize14),
+          ),
+          behavior: SnackBarBehavior.floating,
         ),
-        behavior: SnackBarBehavior.floating,
-      ),
+      );
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => AddFarmerModal(
+            cooperativeId: _cooperativeId!,
+            onFarmerCreated: () {
+              // Refresh farmers list after creation
+              ref
+                  .read(farmerListProvider.notifier)
+                  .loadFarmers(cooperativeId: _cooperativeId!);
+              // Refresh activities to show new farmer registration
+              ref.invalidate(recentActivitiesProvider);
+            },
+          ),
     );
   }
 
   void _viewFarmerDetails(FarmerEntity farmer) {
+    if (_cooperativeId == null) return;
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder:
             (context) => FarmerDetailsScreen(
               farmerId: farmer.id,
-              cooperativeId: widget.cooperativeId,
+              cooperativeId: _cooperativeId!,
             ),
       ),
     ).then((result) {
@@ -89,9 +132,78 @@ class _CooperativeFarmersScreenState
       if (result == true) {
         ref
             .read(farmerListProvider.notifier)
-            .loadFarmers(cooperativeId: widget.cooperativeId);
+            .loadFarmers(cooperativeId: _cooperativeId!);
       }
     });
+  }
+
+  void _editFarmer(FarmerEntity farmer) {
+    if (_cooperativeId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Unable to edit farmer: Cooperative not found',
+            style: GoogleFonts.inter(fontSize: ResponsiveUtils.fontSize14),
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    // Convert old FarmerEntity to new FarmerEntity
+    final newFarmer = _convertToNewFarmerEntity(farmer);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => EditFarmerModal(
+            cooperativeId: _cooperativeId!,
+            farmer: newFarmer,
+            onFarmerUpdated: () {
+              // Refresh farmers list after update
+              ref
+                  .read(farmerListProvider.notifier)
+                  .loadFarmers(cooperativeId: _cooperativeId!);
+              // Refresh activities to show farmer update
+              ref.invalidate(recentActivitiesProvider);
+            },
+          ),
+    );
+  }
+
+  /// Convert old FarmerEntity to new FarmerEntity format
+  new_farmer_entity.FarmerEntity _convertToNewFarmerEntity(
+    FarmerEntity oldFarmer,
+  ) {
+    return new_farmer_entity.FarmerEntity(
+      id: oldFarmer.id,
+      cooperativeId: oldFarmer.cooperativeId,
+      name: oldFarmer.name,
+      zone: oldFarmer.zone,
+      village: oldFarmer.village,
+      gender: oldFarmer.gender.value, // Convert enum to string
+      dateOfBirth: oldFarmer.dateOfBirth.toIso8601String().split('T')[0],
+      phone: oldFarmer.phone,
+      totalTrees: oldFarmer.totalTrees,
+      fruitingTrees: oldFarmer.fruitingTrees,
+      status: 'Active', // Default status
+      bankNumber: oldFarmer.bankNumber.isNotEmpty ? oldFarmer.bankNumber : null,
+      bankName: oldFarmer.bankName.isNotEmpty ? oldFarmer.bankName : null,
+      crops: oldFarmer.crops,
+      email: '', // Default empty email
+      location: '${oldFarmer.village}, ${oldFarmer.zone}',
+      farmSize: 0.0, // Default farm size
+      joinDate:
+          oldFarmer.createdAt?.toIso8601String().split('T')[0] ??
+          DateTime.now().toIso8601String().split('T')[0],
+      createdAt: oldFarmer.createdAt ?? DateTime.now(),
+      updatedAt: oldFarmer.updatedAt ?? DateTime.now(),
+      createdBy: null, // Will be set by the service
+      updatedBy: null, // Will be set by the service
+    );
   }
 
   void _deleteFarmer(FarmerEntity farmer) {
@@ -161,9 +273,11 @@ class _CooperativeFarmersScreenState
     );
 
     // Refresh the farmers list
-    ref
-        .read(farmerListProvider.notifier)
-        .loadFarmers(cooperativeId: widget.cooperativeId);
+    if (_cooperativeId != null) {
+      ref
+          .read(farmerListProvider.notifier)
+          .loadFarmers(cooperativeId: _cooperativeId!);
+    }
   }
 
   @override
@@ -175,9 +289,11 @@ class _CooperativeFarmersScreenState
       appBar: _buildAppBar(theme),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref
-              .read(farmerListProvider.notifier)
-              .loadFarmers(cooperativeId: widget.cooperativeId);
+          if (_cooperativeId != null) {
+            ref
+                .read(farmerListProvider.notifier)
+                .loadFarmers(cooperativeId: _cooperativeId!);
+          }
         },
         child: _buildContent(theme),
       ),
@@ -279,9 +395,11 @@ class _CooperativeFarmersScreenState
           onSelected: (value) {
             switch (value) {
               case 'refresh':
-                ref
-                    .read(farmerListProvider.notifier)
-                    .loadFarmers(cooperativeId: widget.cooperativeId);
+                if (_cooperativeId != null) {
+                  ref
+                      .read(farmerListProvider.notifier)
+                      .loadFarmers(cooperativeId: _cooperativeId!);
+                }
                 break;
               case 'export':
                 // TODO: Implement export functionality
@@ -637,9 +755,11 @@ class _CooperativeFarmersScreenState
             SizedBox(height: ResponsiveUtils.height24),
             ElevatedButton.icon(
               onPressed: () {
-                ref
-                    .read(farmerListProvider.notifier)
-                    .loadFarmers(cooperativeId: widget.cooperativeId);
+                if (_cooperativeId != null) {
+                  ref
+                      .read(farmerListProvider.notifier)
+                      .loadFarmers(cooperativeId: _cooperativeId!);
+                }
               },
               icon: const Icon(Icons.refresh),
               label: Text(
@@ -751,6 +871,9 @@ class _CooperativeFarmersScreenState
                           case 'view':
                             _viewFarmerDetails(farmer);
                             break;
+                          case 'edit':
+                            _editFarmer(farmer);
+                            break;
                           case 'delete':
                             _deleteFarmer(farmer);
                             break;
@@ -770,6 +893,25 @@ class _CooperativeFarmersScreenState
                                   SizedBox(width: ResponsiveUtils.spacing8),
                                   Text(
                                     'View Details',
+                                    style: GoogleFonts.inter(
+                                      fontSize: ResponsiveUtils.fontSize14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    size: ResponsiveUtils.iconSize16,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                  SizedBox(width: ResponsiveUtils.spacing8),
+                                  Text(
+                                    'Edit',
                                     style: GoogleFonts.inter(
                                       fontSize: ResponsiveUtils.fontSize14,
                                     ),
@@ -822,7 +964,7 @@ class _CooperativeFarmersScreenState
                     SizedBox(width: ResponsiveUtils.spacing8),
                     _buildStatChip(
                       icon: Icons.park,
-                      label: '${farmer.totalNumberOfTrees} trees',
+                      label: '${farmer.totalTrees} trees',
                       theme: theme,
                     ),
                   ],
